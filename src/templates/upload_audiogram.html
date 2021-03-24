@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/AADFactory.js') }}"></script>
+<script type="text/javascript">
+  var controller = new AADFactory().createExperimentController();
+  document.addEventListener('DOMContentLoaded', function() {
+      controller.new();
+  });
+</script>
+<div class="backend_action">
+  <h3>Add a new audiogram to the database</h3>
+  
+  <!-- HELP -->
+  <div class="help">
+    Add experiment metadata, animal metadata and data points to create a new audiogram in the database.
+  </div>
+  <!-- UPLOAD BUTTON -->
+  <!--
+  <form method="post" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <input class="button" type="submit" value="Upload" />
+  </form>
+  -->
+</div>
+
+<!-- AUDIOGRAM TABLE -->
+<div id="output"></div>
+
+<!-- SAVE/CANCEL BUTTONS -->
+<div id="page_actions">
+  <img id="save_throbber" src="{{ url_for('static', filename='images/throbber.gif') }}"/>
+  <div class="button" id="save_button" onclick="controller.create()">Create</div>
+  <div class="button" id="cancel_button" onclick="window.location.reload(true)">Cancel</div>
+</div>
+
+<p>
+  <a href="/admin/v1/start">Backend start page</a>
+</p>
+{% endblock %}

@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <title>Audiogrambase admin backend</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/AbstractController.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/AbstractDAO.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/AbstractJsonFormatter.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/AnimalDAO.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/AnimalController.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/AnimalJsonFormatter.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/DataPointDAO.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/DataPointController.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/DataPointJsonFormatter.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/ExperimentController.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/ExperimentDAO.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/ExperimentJsonFormatter.js') }}"></script>
+  </head>
+  <body>
+    <div id="header"><h2>Animal Audiogram Database Backend</h2></div>
+    <div id="main-wrapper">
+      {% block content %}
+      {% endblock %}
+    </div>
+    </div>
+  </body>
+</html>

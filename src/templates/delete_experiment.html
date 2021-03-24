@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+<script type="text/javascript">
+  function deleteAudiogram() {
+      try {
+          var id = parseInt(document.getElementById('delete_id').value);
+          var dao = new ExperimentDAO();
+          dao.read(id);
+          var cResp = confirm(`THIS ACTION CANNOT BE UNDONE\nAre you sure you want to delete audiogram ${id}?`);
+          if (cResp === true) {
+              if (dao.delete()) {
+                  alert(`Audiogram ${dao.id} has been deleted`);
+              }
+          }
+      } catch(e) {
+          console.log(e);
+          alert(e);
+      }
+  }
+</script>
+<div class="backend_action">
+  <h3>Delete an audiogram</h3>
+  <div class="help">
+    Delete an audiogram from the database.
+    If the deleted audiogram is the only audiogram for the corresponding
+    publication, facility, experiment or animal, these will be deleted too.
+    Deletions are permanent, deleted audiograms cannot be undeleted, this action cannot be undone.
+  </div>
+  <label for="delete_id">Id of the audiogram to delete</label> <input type="text" id="delete_id" class="id_input"/>
+  <div class="button" id="delete_button" onclick="deleteAudiogram()">Delete</div>
+</div>
+<p>
+  <a href="/admin/v1/start">Backend start page</a>
+</p>
+
+{% endblock %}

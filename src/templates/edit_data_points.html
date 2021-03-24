@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/AADFactory.js') }}"></script>
+<script type="text/javascript">
+  var controller = new AADFactory().createDataPointController();
+</script>
+<div class="backend_action">
+  <h3>Edit an audiogram's data points</h3>
+  
+  <!-- HELP -->
+  <div class="help">
+    For each data point in an audiogram, edit the SPL, frequency, duration and reference values, remove or add new data points
+    <p>
+      First, enter the id of the audiogram you wish to edit. Clicking on <b>edit</b> will fetch all data points from the audiogram.
+    </p>
+  </div>
+  <div>
+    <!-- EDIT BUTTON -->
+    <label for="edit_id">Id of the audiogram to edit</label> <input type="text" id="edit_id" class="id_input"/>
+    <button class="button" id="edit_button" onclick="controller.read()">Edit</button>
+    <img id="edit_throbber" src="{{ url_for('static', filename='images/throbber.gif') }}"/>
+  </div>
+  
+  <!-- HELP 2 (hidden until audiogram is read) -->
+  <div class="help help2">
+    <p>
+      Once the data points have been fetched,
+    </p>
+    <ul>
+      <li>to <b>edit</b> a data point, enter the new values in the corresponding input fields</li>
+      <li>to <b>remove</b> a data point, click on the corresponding trashcan icon</li>
+      <li>to <b>add</b> a new data point, use the empty line at the bottom of the table</li>
+    </ul>
+    
+    After editing, click on <b>save</b>.
+  </div>
+</div>
+
+<!-- AUDIOGRAM TABLE -->
+<div id="output"></div>
+
+<!-- SAVE/CANCEL BUTTONS -->
+<div id="page_actions">
+  <img id="save_throbber" src="{{ url_for('static', filename='images/throbber.gif') }}"/>
+  <div class="button" id="save_button" onclick="controller.save()">Save</div>
+  <div class="button" id="cancel_button" onclick="window.location.reload(true)">Cancel</div>
+</div>
+
+<p>
+  <a href="/admin/v1/start">Backend start page</a>
+</p>
+{% endblock %}

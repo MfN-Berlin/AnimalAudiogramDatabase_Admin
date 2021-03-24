@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/AADFactory.js') }}"></script>
+<script type="text/javascript">
+  var controller = new AADFactory().createExperimentController();
+  
+  document.addEventListener('DOMContentLoaded', function() {
+      var params = new URLSearchParams(window.location.search);
+      var newid = params.get("newid");
+      if (newid) {
+          document.getElementById('edit_id').value = newid;
+          controller.read();
+      }
+  });
+  
+</script>
+<div class="backend_action">
+  <h3>Edit an experiment's details</h3>
+  
+  <!-- HELP -->
+  <div class="help">
+    Edit the type, facility, position of the animal, distance to sound source, test environment, medium,
+    method, calibration, threshold, staircase procedure, method of constants and sedation state of an experiment.
+  </div>
+  <p>
+    First, enter the id of the audiogram you wish to edit. Clicking on <b>edit</b> will fetch
+    the details of the experiment corresponding to the audiogram.
+  </p>
+  <!-- EDIT BUTTON -->
+  <label for="edit_id">Id of an audiogram </label> <input type="text" id="edit_id" class="id_input"/>
+  <button class="button" id="edit_button" onclick="controller.read()">Edit</button>
+  <img id="edit_throbber" src="{{ url_for('static', filename='images/throbber.gif') }}"/>
+</div>
+
+<!-- AUDIOGRAM TABLE -->
+<div id="output"></div>
+
+<!-- SAVE/CANCEL BUTTONS -->
+<div id="page_actions">
+  <img id="save_throbber" src="{{ url_for('static', filename='images/throbber.gif') }}"/>
+  <div class="button" id="save_button" onclick="controller.save()">Save</div>
+  <div class="button" id="cancel_button" onclick="window.location.reload(true)">Cancel</div>
+</div>
+
+<p>
+  <a href="/admin/v1/start">Backend start page</a>
+</p>
+{% endblock %}

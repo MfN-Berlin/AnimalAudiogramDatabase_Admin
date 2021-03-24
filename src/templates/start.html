@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>API actions</h2>
+  <h3><a href="/admin/v1/edit_experiment_metadata">Edit an experiment's details</a></h3>
+  <div class="help">
+    Edit the type, facility, position of the animal, distance to sound source, test environment, medium,
+    method, calibration, threshold, staircase procedure, method of constants and sedation state of an experiment.    
+  </div>
+  <h3><a href="/admin/v1/edit_animal_metadata">Edit an animal's details</a></h3>
+  <div class="help">
+    Edit the species, sex, liberty status, life stage, age or duration in captivity of an animal.
+  </div>
+  <h3><a href="/admin/v1/edit_data_points">Edit an audiogram's data points</a></h3>
+  <div class="help">
+    For each data point in an audiogram, edit the SPL, frequency, duration and reference values, remove or add new data points.
+  </div>
+  <!--
+  <h3><a href="/admin/v1/upload_audiogram">Add a new audiogram to the database.</a></h3>
+  <div class="help">
+    Create an audiogram and add experiment metadata, animal metadata and data points through the Web-UI. 
+  </div>
+  -->
+  <h3><a href="/admin/v1/delete_experiment">Delete an audiogram from the database</a></h3>
+  <div class="help">
+    Delete an audiogram from the database.
+    If the deleted audiogram is the only audiogram for the corresponding
+    publication, facility, experiment or animal, these will be deleted too.
+    Deletions are permanent, deleted audiograms cannot be undeleted, this action cannot be undone.
+  </div>
+{% endblock %}
+
