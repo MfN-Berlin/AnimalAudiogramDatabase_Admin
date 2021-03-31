@@ -100,7 +100,7 @@ tr.datapoint_deleted {
     margin-left: 1em;
 }
 
-#edit_throbber, #save_throbber {
+#edit_throbber, #save_throbber, #doi_throbber {
     height: 1.7em;
     display: none;
     position: absolute;

@@ -15,9 +15,9 @@ import os
 from werkzeug.utils import secure_filename
 from AdminQuery import *
 from Importer import Importer
+from DOI import Obtain_Citation, Obtain_Citation_Short
 
-
-configPath = "/src/rest.ini"
+configPath = "/src/.env"
 """Path to configuration file."""
 admin_config = None
 """ConfigParser object will hold the custom API configuration """
@@ -605,6 +605,63 @@ def all_publications():
     """
     publications = All_publications_query(admin_config).run(id)
     return jsonify(publications)
+
+
+@fapp.route("/admin/v1/save_publication", methods=['GET'])
+@requires_auth
+def save_publication():
+    """
+    Add a publication by DOI
+
+    Parameters
+    ----------
+    doi: string
+    citation_long: string
+    citation_short: string
+
+    Returns
+    -------
+    json with either:
+    * doi, citation_long, citation_short: when a doi was passed. The data is retrieved from doi.org
+    * id of publication when a publication was added
+    * false on error
+    """
+    if 'doi' not in request.args:
+        return render_template('add_publication.html')
+    doi = request.args['doi']
+    publication = {}
+    try:
+        # all data is there, save in database
+        if (doi
+                and request.args['citation_long'] != 'undefined'
+                and request.args['citation_short'] != 'undefined'):
+            resp = Add_publication_query(admin_config).run(request.args)
+            # returns either id of new publication or false
+            return jsonify(resp)
+
+        # data is missing, get from DOI
+        else:
+            publication['doi'] = doi
+            publication['citation_long'] = Obtain_Citation().run(doi)
+            publication['citation_short'] = Obtain_Citation_Short().run(doi)
+            return jsonify(publication)
+
+    except Exception as e:
+        fapp.logger.info(e)
+
+
+@fapp.route("/admin/v1/read_publication", methods=['GET'])
+@requires_auth
+def read_publication():
+    """
+    Add a publication by DOI
+
+    Parameters
+    ----------
+    id: int publication id in the database
+    """
+    publication = Read_publication_query(admin_config).run(request.args['id'])
+    return jsonify(publication)
 
 
 if __name__ == '__main__':

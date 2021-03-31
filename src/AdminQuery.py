@@ -740,3 +740,69 @@ class All_publications_query(AdminQuery):
             row_headers = [x[0] for x in cursor.description]
             all_results = cursor.fetchall()
         return {'headers': row_headers, 'results': all_results}
+
+
+class Read_publication_query(AdminQuery):
+    """Get publication id and short citation for all publications in the database."""
+
+    def _run(self, param=None):
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                select
+                   id,
+                   citation_short,
+                   citation_long,
+                   doi
+                from
+                   publication
+                where
+                   id=%(id)s
+                """,
+                {
+                    'id': param
+                }
+            )
+            row_headers = [x[0] for x in cursor.description]
+            all_results = cursor.fetchall()
+        return {'headers': row_headers, 'results': all_results}
+
+
+class Add_publication_query(AdminQuery):
+    """Adds a publication to the database."""
+
+    def _run(self, param=None):
+        param = AdminQuery.check_params(param)
+        try:
+            with self.connection as cursor:
+                cursor.execute(
+                    """
+                insert into publication(
+                   doi,
+                   citation_long,
+                   citation_short
+                )
+                values (
+                    %(doi)s,
+                    %(citation_long)s,
+                    %(citation_short)s
+                )
+                """,
+                    {
+                        'doi': param['doi'],
+                        'citation_long': param['citation_long'],
+                        'citation_short': param['citation_short']
+                    }
+                )
+            # When added, return id of added publication
+            with self.connection as cursor:
+                cursor.execute(
+                    """select max(id) from publication"""
+                )
+                row_headers = [x[0] for x in cursor.description]
+                all_results = cursor.fetchall()
+            return {'headers': row_headers, 'results': all_results}
+        except Exception as e:
+            logging.warning(e)
+            # When error, return false
+            return {'headers': ['response'], 'results': [[False]]}

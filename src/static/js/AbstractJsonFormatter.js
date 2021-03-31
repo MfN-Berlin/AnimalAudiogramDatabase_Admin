@@ -54,4 +54,28 @@ class AbstractJsonFormatter {
            ${resp}
            </select>`;
     }
+
+    replace_special_chars(str) {
+        str = str.replace('â', '-');
+        str = str.replace('Ã¢Â€Â¦', '-');
+        str = str.replace('Ã¢Â€Â“', '-');
+        str = str.replace('Ã¢Â€Â', '-');
+        str = str.replace('â€“', '-');
+        str = str.replace('Ã¶', 'ö');
+        str = str.replace('Ã¸', 'ø');
+        str = str.replace('â€™', '\'');
+        str = str.replace('Ã¼', 'ü');
+        str = str.replace('â€˜', '\'');
+        str = str.replace('â€', '');
+        str = str.replace('â€˜', '');
+        //    str = str.replace("Î¼ ", "\u03BC");
+        //    str = str.replace(" Î¼", "\u03BC");
+        str = str.replace("Î¼", "\u03BC");
+        str = str.replace('“', '-');
+        str = str.replace('Â±', '+-');
+        str = str.replace('Â°', '°');
+        str = str.replace('Â', ' ');
+        str = str.replace('-™', "'");    
+        return str;
+    }
 }

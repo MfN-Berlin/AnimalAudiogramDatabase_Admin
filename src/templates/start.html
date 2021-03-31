@@ -1,6 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>API actions</h2>
+<h1>API actions</h1>
+<h2>Add new data</h2>
+Adding a new audiogram to the database requires 3 actions:
+<ol>
+<li>Add the publication details</li>
+<li>Add the species details</li>
+<li>Finally, input the experiment details and data points</li>
+</ol>
+  <h3><a href="/admin/v1/save_publication">Add a publication</a></h3>
+  <div class="help">
+    Add bibliographical details of a publication (Autors, Title, Journal, DOI, etc.).
+    If the publication is already in the database, skip this step.
+    Publication details can be retrieved automatically by DOI.
+  </div>
+  <!--
+  <h3><a href="/admin/v1/upload_audiogram">Add a new audiogram to the database.</a></h3>
+  <div class="help">
+    Create an audiogram and add experiment metadata, animal metadata and data points through the Web-UI. 
+  </div>
+  -->
+<h2>Edit existing data</h2>
   <h3><a href="/admin/v1/edit_experiment_metadata">Edit an experiment's details</a></h3>
   <div class="help">
     Edit the type, facility, position of the animal, distance to sound source, test environment, medium,
@@ -14,12 +34,6 @@
   <div class="help">
     For each data point in an audiogram, edit the SPL, frequency, duration and reference values, remove or add new data points.
   </div>
-  <!--
-  <h3><a href="/admin/v1/upload_audiogram">Add a new audiogram to the database.</a></h3>
-  <div class="help">
-    Create an audiogram and add experiment metadata, animal metadata and data points through the Web-UI. 
-  </div>
-  -->
   <h3><a href="/admin/v1/delete_experiment">Delete an audiogram from the database</a></h3>
   <div class="help">
     Delete an audiogram from the database.

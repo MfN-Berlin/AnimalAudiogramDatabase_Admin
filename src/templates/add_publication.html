@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/AADFactory.js') }}"></script>
+<script type="text/javascript">
+  var controller = new AADFactory().createPublicationController();
+</script>
+<div class="backend_action">
+  <h3>Add a publication</h3>
+  
+  <!-- HELP -->
+  <div class="help">
+    Add bibliographic details of a publication (Autors, Title, Journal, DOI, etc.).<br/>
+    If the publication is already in the database, skip this step.
+    <p>
+    Publication details are retrieved automatically by DOI from the
+    <a href="https://www.doi.org/" target="_blank">International DOI Foundation (IDF)</a>.
+    </p>
+  </div>
+  <!-- EDIT BUTTON -->
+  <label for="doi">DOI of a publication </label> <input type="text" id="doi" class="doi_input"/>
+  <button class="button" id="doi_button" onclick="controller.create()">Retrieve bibliographic data</button>
+  <img id="edit_throbber" src="{{ url_for('static', filename='images/throbber.gif') }}"/>
+</div>
+
+<!-- AUDIOGRAM TABLE -->
+<div id="output"></div>
+
+<!-- SAVE/CANCEL BUTTONS -->
+<div id="page_actions">
+  <img id="save_throbber" src="{{ url_for('static', filename='images/throbber.gif') }}"/>
+  <div class="button" id="save_button" onclick="controller.save()">Save</div>
+  <div class="button" id="cancel_button" onclick="window.location.reload(true)">Cancel</div>
+</div>
+
+<p>
+  <a href="/admin/v1/start">Backend start page</a>
+</p>
+{% endblock %}

@@ -21,4 +21,11 @@ class AADFactory {
         var controller = new ExperimentController(view, dao);
         return controller;
     }
+    
+    createPublicationController() {
+        var dao = new PublicationDAO();
+        var view = new PublicationJsonFormatter(dao);
+        var controller = new PublicationController(view, dao);
+        return controller;
+    }
 }
