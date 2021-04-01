@@ -16,6 +16,8 @@ from werkzeug.utils import secure_filename
 from AdminQuery import *
 from Importer import Importer
 from DOI import Obtain_Citation, Obtain_Citation_Short
+from Tree_of_Life import Obtain_OTT_ID, Obtain_Lineage
+
 
 configPath = "/src/.env"
 """Path to configuration file."""
@@ -605,6 +607,51 @@ def all_publications():
     """
     publications = All_publications_query(admin_config).run(id)
     return jsonify(publications)
+
+
+@fapp.route("/admin/v1/add_taxon", methods=['GET'])
+@requires_auth
+def add_taxon():
+    """
+    Add a species to the database
+
+    Parameters
+    ----------
+    (all required)
+
+    ott_id: int
+    phylum: string
+    class: string
+    order: string
+    family: string
+    genus: string
+    species: string
+    unique_name: string (genus + species)
+    vernacular_name: string English name
+    """
+    if 'species_ott_id' not in request.args:
+        return render_template('add_species.html')
+    resp = Add_taxon_query(admin_config).run(request.args)
+    # returns either id of new species or false
+    return jsonify(resp)
+
+
+@fapp.route("/admin/v1/retrieve_species_otl", methods=['GET'])
+@requires_auth
+def retrieve_species_otl():
+    """
+    Retrieve taxonomy from Open Tree of Life
+    """
+    if 'latin_name' not in request.args:
+        resp = {'headers': ['response'], 'results': [[False]]}
+        return jsonify(resp)
+
+    taxon = {}
+    # get OTT ID
+    taxon['ott_id'] = Obtain_OTT_ID().run(request.args['latin_name'])
+    # get lineage
+    lineage = Obtain_Lineage().run(taxon['ott_id'])
+    return jsonify(lineage)
 
 
 @fapp.route("/admin/v1/save_publication", methods=['GET'])

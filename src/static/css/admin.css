@@ -150,6 +150,10 @@ tr.datapoint_deleted {
     margin-bottom: 0.5em;
 }
 
+.disabled {
+    background-color: #ccc;
+}
+
 .filter_value {
     display:inline;
     margin-left: 1em;

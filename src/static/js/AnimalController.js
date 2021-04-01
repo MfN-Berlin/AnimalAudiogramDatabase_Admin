@@ -8,7 +8,7 @@ class AnimalController extends AbstractController {
         this.view = view;
         this.dao = dao;
     }
-    
+
     /**Reads an animal's details from the database.*/
     read() {
         try {

@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/AADFactory.js') }}"></script>
+<script type="text/javascript">
+  var controller = new AADFactory().createTaxonomyController();
+</script>
+<div class="backend_action">
+  <h3>Add species</h3>
+  
+  <!-- HELP -->
+  <div class="help">
+    Add taxonomic details of a new species (Latin name, vernacular name, etc.).
+    If the species is already in the database, skip this step.
+    <p>
+    Taxonomic details can be retrieved automatically from the 
+    <a href="https://opentreeoflife.github.io/" target="_blank">Open Tree of Life database</a>.
+    </p>
+  </div>
+  <!-- EDIT BUTTON -->
+  <label for="latin_name">Latin name of a species </label> <input type="text" id="latin_name" class="latin_name_input"/>
+  <button class="button" id="latin_name_button" onclick="controller.create()">Retrieve taxonomic data</button>
+  <img id="edit_throbber" src="{{ url_for('static', filename='images/throbber.gif') }}"/>
+</div>
+
+<!-- AUDIOGRAM TABLE -->
+<div id="output"></div>
+
+<!-- SAVE/CANCEL BUTTONS -->
+<div id="page_actions">
+  <img id="save_throbber" src="{{ url_for('static', filename='images/throbber.gif') }}"/>
+  <div class="button" id="save_button" onclick="controller.save()">Save</div>
+  <div class="button" id="cancel_button" onclick="window.location.reload(true)">Cancel</div>
+</div>
+
+<p>
+  <a href="/admin/v1/start">Backend start page</a>
+</p>
+{% endblock %}

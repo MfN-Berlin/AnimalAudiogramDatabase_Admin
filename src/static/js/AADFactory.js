@@ -8,6 +8,13 @@ class AADFactory {
         return controller;
     }
     
+    createTaxonomyController() {
+        var dao = new TaxonomyDAO();
+        var view = new TaxonomyJsonFormatter(dao)
+        var controller = new TaxonomyController(view, dao);
+        return controller;
+    }
+    
     createDataPointController() {
         var dao = new DataPointDAO()
         var view = new DataPointJsonFormatter(dao);

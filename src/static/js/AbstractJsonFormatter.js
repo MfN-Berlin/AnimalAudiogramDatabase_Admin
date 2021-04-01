@@ -4,12 +4,33 @@ class AbstractJsonFormatter {
         this.dao = dao;
     }
 
+    format_hidden(id, val) {
+        var resp = `
+               <input type="hidden" id="${id}" value="${val}"/>`;
+        return resp;
+    }
     
     format_input(label, id, val) {
         if (val == null) val = '';
         var resp = `
                <div class="filter_label">${label}</div>
                <input type="text" id="${id}" size="4" placeholder="" value="${val}"/>`;
+        return resp;
+    }
+    
+    format_input_long(label, id, val) {
+        if (val == null) val = '';
+        var resp = `
+               <div class="filter_label">${label}</div>
+               <input type="text" id="${id}" size="64" placeholder="" value="${val}"/>`;
+        return resp;
+    }
+    
+    format_input_long_disabled(label, id, val) {
+        if (val == null) val = '';
+        var resp = `
+               <div class="filter_label disabled">${label}</div>
+               <input type="text" id="${id}" size="64" placeholder="" value="${val}" disabled/>`;
         return resp;
     }
     

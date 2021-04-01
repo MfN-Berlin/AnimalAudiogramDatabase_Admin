@@ -6,6 +6,22 @@ class AnimalDAO extends AbstractDAO {
     constructor(expId) {
         super();
     }
+
+    retrieve(latin_name) {
+        if (!latin_name) {
+            throw 'No latin name given';
+        }
+        var retrieve_url = `/admin/v1/retrieve_species_otl?latin_name=${latin_name}`;
+        try {
+            var json = this.httpGet(retrieve_url);
+            var jsonObj = JSON.parse(json);
+
+        } catch(e) {
+            console.log(e);
+            return false;
+        }
+        return jsonObj;
+    }
     
     /**Gets animal details.*/
     read(expId) {

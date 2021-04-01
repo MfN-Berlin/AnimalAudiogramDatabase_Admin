@@ -806,3 +806,64 @@ class Add_publication_query(AdminQuery):
             logging.warning(e)
             # When error, return false
             return {'headers': ['response'], 'results': [[False]]}
+
+
+class Add_taxon_query(AdminQuery):
+    """Adds a taxon to the database."""
+
+    def _run(self, params=None):
+        params = AdminQuery.check_params(params)
+        try:
+            # check that taxon is not already in database
+            with self.connection as cursor:
+                cursor.execute(
+                    """
+                    select
+                       ott_id
+                    from
+                       taxon
+                    where
+                       unique_name=%(unique_name)s
+                """,
+                    {
+                        'unique_name': params['unique_name']
+                    }
+                )
+            row_headers = [x[0] for x in cursor.description]
+            all_results = cursor.fetchall()
+            # add taxon
+            if (len(all_results) == 0):
+                with self.connection as cursor:
+                    cursor.execute(
+                        """
+                        insert into taxon(
+                           ott_id,
+                           unique_name,
+                           rank,
+                           parent,
+                           vernacular_name_english
+                        )
+                        values (
+                           %(ott_id)s,
+                           %(unique_name)s,
+                           %(rank)s,
+                           %(parent)s,
+                           %(vernacular_name)s
+                        )
+                        """,
+                        {
+                            'ott_id': params['species_ott_id'],
+                            'unique_name': params['unique_name'],
+                            'rank': 'species',
+                            'parent': params['genus_ott_id'],
+                            'vernacular_name': params['vernacular_name']
+                        }
+                    )
+                    return {'headers': ['response'], 'results': [[True]]}
+            # taxon is already in database
+            else:
+                raise Exception('Already in database')
+        except Exception as e:
+            logging.warning(e)
+            # When error, return false
+            return {'headers': ['response'], 'results': [[False], [str(e)]]}
