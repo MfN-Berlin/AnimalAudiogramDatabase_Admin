@@ -308,7 +308,8 @@ class InsertExperimentQuery(AdminQuery):
             cursor.execute(
                 """
                 insert into
-                   audiogram_publication(audiogram_experiment_id, publication_id)
+                   audiogram_publication(
+                       audiogram_experiment_id, publication_id)
                    values(%(id)s, 0)
                 """,
                 {
@@ -814,10 +815,173 @@ class Add_taxon_query(AdminQuery):
     def _run(self, params=None):
         params = AdminQuery.check_params(params)
         try:
-            # check that taxon is not already in database
-            with self.connection as cursor:
-                cursor.execute(
-                    """
+            # phylum
+            if not self._check_taxon_present(params['phylum']):
+                self._insert_taxon(
+                    params['phylum_ott_id'],
+                    params['phylum'],
+                    'phylum',
+                    None,
+                    None)
+
+            # class
+            if not self._check_taxon_present(params['class']):
+                self._insert_taxon(
+                    params['class_ott_id'],
+                    params['class'],
+                    'class',
+                    params['phylum_ott_id'],
+                    None)
+
+            # order
+            if not self._check_taxon_present(params['order']):
+                self._insert_taxon(
+                    params['order_ott_id'],
+                    params['order'],
+                    'order',
+                    params['class_ott_id'],
+                    None)
+
+            # family
+            if not self._check_taxon_present(params['family']):
+                self._insert_taxon(
+                    params['family_ott_id'],
+                    params['family'],
+                    'family',
+                    params['order_ott_id'],
+                    None)
+
+            # genus
+            if not self._check_taxon_present(params['genus']):
+                self._insert_taxon(
+                    params['genus_ott_id'],
+                    params['genus'],
+                    'genus',
+                    params['family_ott_id'],
+                    None)
+
+            # species
+            if not self._check_taxon_present(params['unique_name']):
+                self._insert_taxon(
+                    params['species_ott_id'],
+                    params['unique_name'],
+                    'species',
+                    params['genus_ott_id'],
+                    params['vernacular_name'])
+                return {'headers': ['response'], 'results': [[True]]}
+
+            # taxon is already in database
+            else:
+                raise Exception('Already in database')
+        except Exception as e:
+            logging.warning(e)
+            # When error, return false
+            return {'headers': ['response'], 'results': [[False], [str(e)]]}
+        finally:
+            self._make_nested_set()
+
+    def _make_nested_set(self):
+        """Adds left and right indexes to make an nested set out of the taxonomic tree."""
+        root_ott_id = self._get_root()
+        index = 1
+        #root['lft'] = index
+        index = self._nested_set_recurse(index, root_ott_id)
+        #root['rgt'] = index
+
+    def _nested_set_recurse(self, index, parent_ott_id):
+        """Recurse the nodes of the tree, adding left and right indexes."""
+        index += 1
+        children = self._get_child_nodes(parent_ott_id)
+        for taxon in children:
+            ott_id = taxon[0]
+            self._set_lft(ott_id, index)
+        #    taxon['lft'] = index
+            index = self._nested_set_recurse(index, taxon)
+        #    taxon['rgt'] = index
+            self._set_rgt(ott_id, index)
+            index += 1
+        return index
+
+    def _set_lft(self, ott_id, index):
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                    update
+                       taxon
+                    set
+                       lft = %(lft)s
+                    where
+                       ott_id=%(ott_id)s
+                        """,
+                {
+                    'lft': index,
+                    'ott_id': ott_id
+                }
+            )
+
+    def _set_rgt(self, ott_id, index):
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                    update
+                       taxon
+                    set
+                       rgt = %(rgt)s
+                    where
+                       ott_id=%(ott_id)s
+                        """,
+                {
+                    'rgt': index,
+                    'ott_id': ott_id
+                }
+            )
+
+    def _get_child_nodes(self, parent_ott_id):
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                    select
+                       ott_id
+                    from
+                       taxon
+                    where
+                       parent=%(parent_ott_id)s
+                        """,
+                {
+                    'parent_ott_id': parent_ott_id
+                }
+            )
+            children_ott_id = cursor.fetchall()
+        return (children_ott_id)
+
+    def _get_root(self):
+        # get the ott_id of the root of the tree
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                    select
+                       ott_id
+                    from
+                       taxon
+                    where
+                       rank='phylum'
+                """
+            )
+            root_ott_id = cursor.fetchone()[0]
+        return (root_ott_id)
+
+    def _check_taxon_present(self, unique_name):
+        """
+        Checks that taxon is not already in database
+
+        Return
+        ------
+        True when taxon is present
+        False when taxon is not present
+        """
+        with self.connection as cursor:
+            cursor.execute(
+                """
                     select
                        ott_id
                     from
@@ -825,17 +989,18 @@ class Add_taxon_query(AdminQuery):
                     where
                        unique_name=%(unique_name)s
                 """,
-                    {
-                        'unique_name': params['unique_name']
-                    }
-                )
+                {
+                    'unique_name': unique_name
+                }
+            )
             row_headers = [x[0] for x in cursor.description]
             all_results = cursor.fetchall()
-            # add taxon
-            if (len(all_results) == 0):
-                with self.connection as cursor:
-                    cursor.execute(
-                        """
+        return (len(all_results) != 0)
+
+    def _insert_taxon(self, ott_id, unique_name, rank, parent="NULL", vernacular_name="NULL"):
+        with self.connection as cursor:
+            cursor.execute(
+                """
                         insert into taxon(
                            ott_id,
                            unique_name,
@@ -851,19 +1016,11 @@ class Add_taxon_query(AdminQuery):
                            %(vernacular_name)s
                         )
                         """,
-                        {
-                            'ott_id': params['species_ott_id'],
-                            'unique_name': params['unique_name'],
-                            'rank': 'species',
-                            'parent': params['genus_ott_id'],
-                            'vernacular_name': params['vernacular_name']
-                        }
-                    )
-                    return {'headers': ['response'], 'results': [[True]]}
-            # taxon is already in database
-            else:
-                raise Exception('Already in database')
-        except Exception as e:
-            logging.warning(e)
-            # When error, return false
-            return {'headers': ['response'], 'results': [[False], [str(e)]]}
+                {
+                    'ott_id': ott_id,
+                    'unique_name': unique_name,
+                    'rank': rank,
+                    'parent': parent,
+                    'vernacular_name': vernacular_name
+                }
+            )
