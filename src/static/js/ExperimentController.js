@@ -21,6 +21,7 @@ class ExperimentController extends AbstractController {
             this._readFromForm();
             this.dao.id = 0; // 0 stands for new
             var json = this.dao.save();
+            if (json == 'False') throw('Error while saving data');
             var jsonObj = JSON.parse(json)[0];
             var newId = jsonObj['max(id)'];
             alert(`Audiogram id ${newId} has been created`);
@@ -76,6 +77,7 @@ class ExperimentController extends AbstractController {
     /** Reads data from form and stores it in this.dao */
     _readFromForm() {
         this.dao.citation_id = document.getElementById('citation_id').value;
+        this.dao.ott_id = document.getElementById('ott_id').value;
         this.dao.background_noise_in_decibel = document.getElementById('background_noise_in_decibel').value;
         this.dao.calibration = document.getElementById('calibration').value;
         this.dao.distance_to_sound_source_in_meter = document.getElementById('distance_to_sound_source_in_meter').value;

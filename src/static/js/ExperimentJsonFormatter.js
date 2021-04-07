@@ -16,6 +16,12 @@ class ExperimentJsonFormatter extends AbstractJsonFormatter {
                jsonObj.citation_id,
                this._read_publication_options()
             )}
+            ${this.format_pulldown_keyval(
+               'Species', 
+               'ott_id', 
+               jsonObj.ott_id,
+               this._read_taxon_options()
+            )}
             <div id="filters display_experiment_details">
             ${this.format_pulldown(
                'Measurement type', 
@@ -94,6 +100,19 @@ class ExperimentJsonFormatter extends AbstractJsonFormatter {
         return resp;
     }
 
+    _read_taxon_options() {
+        var url = '/admin/v1/all_species_vernacular';
+        var json = this.dao.httpGet(url);
+        var obj = JSON.parse(json);
+        var dict = {};
+        for (var i in obj) {
+            var key = obj[i].ott_id;
+            var val = obj[i].vernacular_name_english;
+            dict[key] = val;
+        }
+        return dict;
+    }
+    
     _read_publication_options() {
         var url = '/admin/v1/all_publications';
         var json = this.dao.httpGet(url);

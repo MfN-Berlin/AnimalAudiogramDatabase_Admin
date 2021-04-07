@@ -30,6 +30,7 @@ class ExperimentDAO extends AbstractDAO {
     save() {
         var url = `/admin/v1/save_experiment?id=${this.id}`;
         url += `&citation_id=${this.citation_id}`;
+        url += `&ott_id=${this.ott_id}`;
         url += `&background_noise_in_decibel=${this.background_noise_in_decibel}`;
         url += `&calibration=${this.calibration}`;
         url += `&distance_to_sound_source_in_meter=${this.distance_to_sound_source_in_meter}`;

@@ -364,6 +364,7 @@ def save_experiment():
     ----------
        id: int, required id of an audiogram or 0 for new audiogram
        citation_id: int
+       ott_id: int taxonomy id
        background_noise_in_decibel: float
        calibration: string
        distance_to_sound_source_in_meter: float
@@ -397,6 +398,7 @@ def save_experiment():
     ---------
     /admin/v1/save_experiment?id=197
        &citation_id=
+       &ott_id=
        &background_noise_in_decibel=
        &calibration=
        &distance_to_sound_source_in_meter=
@@ -428,10 +430,11 @@ def save_experiment():
         if int(request.args['id']) == 0:
             resp = InsertExperimentQuery(admin_config).run(request.args)
             max_id = resp[0]['max(id)']
-            return(jsonify(resp))
+            resp = jsonify(resp)
         else:
             SaveExperimentQuery(admin_config).run(request.args)
-        return 'True'
+            resp = 'True'
+        return resp
     except Exception as e:
         logging.warning(e)
         return 'False'

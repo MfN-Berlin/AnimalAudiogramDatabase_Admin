@@ -287,11 +287,16 @@ class ExperimentQuery(AdminQuery):
                 facility_id,
                 measurement_method_id,
                 testtone_form_method_id,
-                measurement_type
+                measurement_type,
+                publication_id as citation_id,
+                taxon_id as ott_id
             from
-                audiogram_experiment
+                audiogram_experiment, audiogram_publication,individual_animal,test_animal
             where
-                id=%(id)s
+                audiogram_experiment.id=%(id)s
+                and audiogram_publication.audiogram_experiment_id = audiogram_experiment.id
+                and test_animal.audiogram_experiment_id=audiogram_experiment.id 
+                and test_animal.individual_animal_id=individual_animal.id
             """,
                 {'id': param})
             row_headers = [x[0] for x in cursor.description]
@@ -304,18 +309,7 @@ class InsertExperimentQuery(AdminQuery):
 
     def _run(self, param=None):
         param = AdminQuery.check_params(param)
-        with self.connection as cursor:
-            cursor.execute(
-                """
-                insert into
-                   audiogram_publication(
-                       audiogram_experiment_id, publication_id)
-                   values(%(id)s, 0)
-                """,
-                {
-                    'id': param['id']
-                }
-            )
+        # insert experiment metadata
         with self.connection as cursor:
             cursor.execute(
                 """
@@ -405,8 +399,54 @@ class InsertExperimentQuery(AdminQuery):
                 """select max(id) from audiogram_experiment"""
             )
             row_headers = [x[0] for x in cursor.description]
-            all_results = cursor.fetchall()
-        return {'headers': row_headers, 'results': all_results}
+            max_exp = cursor.fetchone()
+        # insert a new publication
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                insert into
+                   audiogram_publication(
+                       audiogram_experiment_id, publication_id)
+                   values(%(max_exp)s, %(citation_id)s)
+                """,
+                {
+                    'max_exp': max_exp,
+                    'citation_id': param['citation_id']
+                }
+            )
+        # insert a new animal
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                insert into
+                   individual_animal(
+                       taxon_id)
+                   values(%(ott_id)s)
+                """,
+                {
+                    'ott_id': param['ott_id']
+                }
+            )
+        with self.connection as cursor:
+            cursor.execute(
+                """select max(id) from individual_animal"""
+            )
+            row_headers = [x[0] for x in cursor.description]
+            max_animal = cursor.fetchone()
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                insert into
+                   test_animal(
+                       audiogram_experiment_id, individual_animal_id)
+                   values(%(max_exp)s,%(max_animal)s)
+                """,
+                {
+                    'max_exp': max_exp,
+                    'max_animal': max_animal
+                }
+            )
+        return {'headers': row_headers, 'results': [max_exp]}
 
 
 class SaveExperimentQuery(AdminQuery):
@@ -884,9 +924,9 @@ class Add_taxon_query(AdminQuery):
         """Adds left and right indexes to make an nested set out of the taxonomic tree."""
         root_ott_id = self._get_root()
         index = 1
-        #root['lft'] = index
+        # root['lft'] = index
         index = self._nested_set_recurse(index, root_ott_id)
-        #root['rgt'] = index
+        # root['rgt'] = index
 
     def _nested_set_recurse(self, index, parent_ott_id):
         """Recurse the nodes of the tree, adding left and right indexes."""
