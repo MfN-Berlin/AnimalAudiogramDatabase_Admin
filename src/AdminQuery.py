@@ -295,7 +295,7 @@ class ExperimentQuery(AdminQuery):
             where
                 audiogram_experiment.id=%(id)s
                 and audiogram_publication.audiogram_experiment_id = audiogram_experiment.id
-                and test_animal.audiogram_experiment_id=audiogram_experiment.id 
+                and test_animal.audiogram_experiment_id=audiogram_experiment.id
                 and test_animal.individual_animal_id=individual_animal.id
             """,
                 {'id': param})
@@ -303,8 +303,53 @@ class ExperimentQuery(AdminQuery):
             all_results = cursor.fetchall()
         return {'headers': row_headers, 'results': all_results}
 
+    def _insert_animal(self, ott_id, exp_id):
+        # insert a new animal
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                insert into
+                   individual_animal(
+                       taxon_id)
+                   values(%(ott_id)s)
+                """,
+                {
+                    'ott_id': ott_id
+                }
+            )
+        with self.connection as cursor:
+            cursor.execute(
+                """select max(id) from individual_animal"""
+            )
+            max_animal = cursor.fetchone()
 
-class InsertExperimentQuery(AdminQuery):
+        # delete old entry if present
+            cursor.execute(
+                """
+                delete from test_animal where audiogram_experiment_id=%(exp_id)s
+                """,
+                {
+                    'exp_id': exp_id,
+                }
+            )
+
+        # relate to experiment
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                insert into
+                   test_animal(
+                       audiogram_experiment_id, individual_animal_id)
+                   values(%(max_exp)s,%(max_animal)s)
+                """,
+                {
+                    'max_exp': exp_id,
+                    'max_animal': max_animal
+                }
+            )
+
+
+class InsertExperimentQuery(ExperimentQuery):
     """Adds a new experiment."""
 
     def _run(self, param=None):
@@ -415,45 +460,16 @@ class InsertExperimentQuery(AdminQuery):
                 }
             )
         # insert a new animal
-        with self.connection as cursor:
-            cursor.execute(
-                """
-                insert into
-                   individual_animal(
-                       taxon_id)
-                   values(%(ott_id)s)
-                """,
-                {
-                    'ott_id': param['ott_id']
-                }
-            )
-        with self.connection as cursor:
-            cursor.execute(
-                """select max(id) from individual_animal"""
-            )
-            row_headers = [x[0] for x in cursor.description]
-            max_animal = cursor.fetchone()
-        with self.connection as cursor:
-            cursor.execute(
-                """
-                insert into
-                   test_animal(
-                       audiogram_experiment_id, individual_animal_id)
-                   values(%(max_exp)s,%(max_animal)s)
-                """,
-                {
-                    'max_exp': max_exp,
-                    'max_animal': max_animal
-                }
-            )
+        self._insert_animal(param['ott_id'], max_exp)
         return {'headers': row_headers, 'results': [max_exp]}
 
 
-class SaveExperimentQuery(AdminQuery):
+class SaveExperimentQuery(ExperimentQuery):
     """Edits the details of an existing experiment."""
 
     def _run(self, param=None):
         param = AdminQuery.check_params(param)
+        # update publication
         with self.connection as cursor:
             cursor.execute(
                 """
@@ -470,13 +486,13 @@ class SaveExperimentQuery(AdminQuery):
                 }
             )
 
+        # update metadata
         with self.connection as cursor:
             cursor.execute(
                 """
                 update
                    audiogram_experiment
                 set
-                   citation_id=%(citation_id)s,
                    latitude_in_decimal_degree=%(latitude_in_decimal_degree)s,
                    longitude_in_decimal_degree=%(longitude_in_decimal_degree)s,
                    position_of_animal=%(position_of_animal)s,
@@ -505,7 +521,6 @@ class SaveExperimentQuery(AdminQuery):
                    audiogram_experiment.id=%(id)s
                 """,
                 {
-                    'citation_id': param['citation_id'],
                     'latitude_in_decimal_degree': param['latitude_in_decimal_degree'],
                     'longitude_in_decimal_degree': param['longitude_in_decimal_degree'],
                     'position_of_animal': param['position_of_animal'],
@@ -533,8 +548,33 @@ class SaveExperimentQuery(AdminQuery):
                     'id': param['id']
                 }
             )
+            # check if animal has changed
+            if int(param['ott_id']) != self._read_taxon(param['id']):
+                # if animal has changed, insert new entry, don't update old one
+                self._insert_animal(param['ott_id'], param['id'])
 
         return {'headers': ['response'], 'results': []}
+
+    def _read_taxon(self, exp_id):
+        with self.connection as cursor:
+            cursor.execute(
+                """
+                select
+                   taxon_id
+                from
+                   individual_animal,test_animal
+                where
+                   test_animal.audiogram_experiment_id=%(exp_id)s
+                and
+                   test_animal.individual_animal_id=individual_animal.id;
+                """,
+                {
+                    'exp_id': exp_id
+                }
+            )
+            row_headers = [x[0] for x in cursor.description]
+            ott_id = cursor.fetchone()[0]
+            return ott_id
 
 
 class DeleteQuery(AdminQuery):  # pylint: disable=too-few-public-methods
