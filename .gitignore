@@ -2,3 +2,4 @@
 __pycache__
 rest.ini
 .env
+src/static/doc/auto

@@ -1,6 +1,31 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>API actions</h1>
+<h1>AAD administration interface</h1>
+<b>See the <a href="{{ url_for('static', filename='doc/manual.pdf') }}">administration manual</a> for a more detailed description.</b>
+
+<h2>Edit existing data</h2>
+
+<h3><a href="/admin/v1/edit_experiment_metadata">Edit an experiment's details</a></h3>
+  <div class="help">
+    Edit the type, facility, position of the animal, distance to sound source, test environment, medium,
+    method, calibration, threshold, staircase procedure, method of constants and sedation state of an experiment.    
+  </div>
+<h3><a href="/admin/v1/edit_animal_metadata">Edit an animal's details</a></h3>
+  <div class="help">
+    Edit the species, sex, liberty status, life stage, age or duration in captivity of an animal.
+  </div>
+  <h3><a href="/admin/v1/edit_data_points">Edit an audiogram's data points</a></h3>
+  <div class="help">
+    For each data point in an audiogram, edit the SPL, frequency, duration and reference values, remove or add new data points.
+  </div>
+<h3><a href="/admin/v1/delete_experiment">Delete an audiogram from the database</a></h3>
+  <div class="help">
+    Delete an audiogram from the database.
+    If the deleted audiogram is the only audiogram for the corresponding
+    publication, facility, experiment or animal, these will be deleted too.
+    Deletions are permanent, deleted audiograms cannot be undeleted, this action cannot be undone.
+  </div>
+
 <h2>Add new data</h2>
 Adding a new audiogram to the database requires 3 actions:
 <ol>
@@ -9,6 +34,8 @@ Adding a new audiogram to the database requires 3 actions:
 <li>Create an experiment and add metadata about publication, method, etc.</li>
 <li>Finally, open the newly created a experiment and add the audiogram's data points</li>
 </ol>
+
+
   <h3><a href="/admin/v1/save_publication">Add a publication</a></h3>
   <div class="help">
     Add bibliographical details of a publication (Autors, Title, Journal, DOI, etc.).
@@ -24,31 +51,6 @@ Adding a new audiogram to the database requires 3 actions:
   <h3><a href="/admin/v1/upload_audiogram">Add a new experiment to the database.</a></h3>
   <div class="help">
     Create an experiment and add metadata about publication, method, etc.
-  </div>
-  <h3><a href="/admin/v1/edit_data_points">Edit an audiogram's data points</a></h3>
-  <div class="help">
-    For each data point in an audiogram, edit the SPL, frequency, duration and reference values, remove or add new data points.
-  </div>
-<h2>Edit existing data</h2>
-  <h3><a href="/admin/v1/edit_experiment_metadata">Edit an experiment's details</a></h3>
-  <div class="help">
-    Edit the type, facility, position of the animal, distance to sound source, test environment, medium,
-    method, calibration, threshold, staircase procedure, method of constants and sedation state of an experiment.    
-  </div>
-  <h3><a href="/admin/v1/edit_animal_metadata">Edit an animal's details</a></h3>
-  <div class="help">
-    Edit the species, sex, liberty status, life stage, age or duration in captivity of an animal.
-  </div>
-  <h3><a href="/admin/v1/edit_data_points">Edit an audiogram's data points</a></h3>
-  <div class="help">
-    For each data point in an audiogram, edit the SPL, frequency, duration and reference values, remove or add new data points.
-  </div>
-  <h3><a href="/admin/v1/delete_experiment">Delete an audiogram from the database</a></h3>
-  <div class="help">
-    Delete an audiogram from the database.
-    If the deleted audiogram is the only audiogram for the corresponding
-    publication, facility, experiment or animal, these will be deleted too.
-    Deletions are permanent, deleted audiograms cannot be undeleted, this action cannot be undone.
   </div>
 {% endblock %}
 
