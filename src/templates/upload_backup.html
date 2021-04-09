@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/AADFactory.js') }}"></script>
+<div class="backend_action">
+  <h3>Upload a database backup</h3>
+  
+  <!-- HELP -->
+  <div class="help">
+    Restore the audiogram data from a backup file.
+
+    <b>All audiogram data edited after the backup was made will be overwritten.</b>
+  </div>
+  <!-- UPLOAD BUTTON -->
+  <form method="post" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <input class="button" type="submit" value="Upload" />
+  </form>
+</div>
+
+<p>
+  <a href="/admin/v1/start">Backend start page</a>
+</p>
+{% endblock %}

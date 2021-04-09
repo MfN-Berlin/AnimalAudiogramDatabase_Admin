@@ -3,6 +3,17 @@
 <h1>AAD administration interface</h1>
 <b>See the <a href="{{ url_for('static', filename='doc/manual.pdf') }}">administration manual</a> for a more detailed description.</b>
 
+<h2>Backup</h2>
+<h3><a href="/admin/v1/backup.sql">Backup all audiogram data</a></h3>
+<div class="help">
+Before making changes to the database, please backup the data.  
+</div>
+
+<h3><a href="/admin/v1/backup_restore">Restore all audiogram data</a></h3>
+<div class="help">
+Restore the audiogram data from a backup file. 
+</div>
+
 <h2>Edit existing data</h2>
 
 <h3><a href="/admin/v1/edit_experiment_metadata">Edit an experiment's details</a></h3>

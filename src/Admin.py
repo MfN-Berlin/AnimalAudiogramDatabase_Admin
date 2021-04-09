@@ -5,7 +5,7 @@ Audiogrambase http API.
 Created on 28.01.2019
 @author: Alvaro Ortiz Troncoso, Museum fuer Naturkunde Berlin
 """
-from flask import Flask, request, render_template, url_for, jsonify, Response, flash, redirect
+from flask import Flask, request, render_template, url_for, jsonify, Response, flash, redirect, send_file
 from flask_cors import CORS
 from functools import wraps
 import configparser
@@ -14,10 +14,10 @@ import logging
 import os
 from werkzeug.utils import secure_filename
 from AdminQuery import *
-#from Importer import Importer
+#from data_import.Importer import Importer
 from data_import.DOI import Obtain_Citation, Obtain_Citation_Short
 from data_import.Tree_of_Life import Obtain_OTT_ID, Obtain_Lineage
-
+from data_import.Backup import Backup
 
 configPath = "/src/.env"
 """Path to configuration file."""
@@ -72,6 +72,50 @@ def start():
     return render_template('start.html')
 
 ########################
+# Backup #
+########################
+
+
+@fapp.route("/admin/v1/backup.sql", methods=['GET'])
+@requires_auth
+def backup_download():
+    """
+    Backup all audiogram data
+    """
+    backup = Backup(admin_config)
+    filename = backup.create()
+    if filename:
+        return send_file(filename, attachment_filename='backup.sql')
+    else:
+        return 'False'
+
+
+@fapp.route("/admin/v1/backup_restore", methods=['GET', 'POST'])
+@requires_auth
+def backup_restore():
+    UPLOAD_FOLDER = '/tmp'
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = 'backup.sql'
+            filepath = os.path.join(UPLOAD_FOLDER, filename)
+            file.save(filepath)
+            flash('File uploaded')
+            backup = Backup(admin_config)
+            resp = backup.restore()
+        else:
+            logging.warning('file extension not allowed %s' % file.filename)
+
+    return render_template('upload_backup.html')
+
+
+########################
 # Create new audiogram #
 ########################
 
@@ -112,7 +156,7 @@ def upload_audiogram():
 
 def allowed_file(filename):
     """Checks the extension of the file."""
-    ALLOWED_EXTENSIONS = {'csv'}
+    ALLOWED_EXTENSIONS = {'csv', 'sql'}
 
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

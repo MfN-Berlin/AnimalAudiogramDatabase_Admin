@@ -27,14 +27,23 @@
 
 % ----------------------------------------------------------------------------------------------%
 \section{Accessing the administration interface}
-The AAD is a publicly accessible ressource and can be accessed here:\\ \url{animalaudiograms.museumfuernaturkunde.berlin/}
-
 Accessing the administration interface requires administrative privileges. Therefore, the administration interface is password-protected. Please contact your system administrator to get a password that will grant you administrative privileges.
 
 Once you have been granted administrative privileges, access the administration interface by opening this url in a browser:\\
 \url{https://animalaudiograms.museumfuernaturkunde.berlin/admin/v1/start}\\
 Login with your administrative password.
 
+% ----------------------------------------------------------------------------------------------%
+\section{Backup}
+\subsection{Creating a backup}
+Before making changes to the database, please backup the data. By clicking on ``Backup all audiogram data'', you can download a backup file in SQL format. This backup includes all the audiogram data in the database (but  not the texts and images of the UI).
+
+\subsection{Restoring a backup}
+To restore the audiogram data from a backup file, open the ``Restore all audiogram data'' link, and use the form to upload the backup SQL file created with the function described above.
+\\\\
+\emph{All audiogram data added after the backup was made will be erased.}
+\\\\
+Please note that this will update not only the data but also the re-create all the tables. So if you need to do a change to the scheme, e.g. change an enum or a data type, you can download a backup, change the scheme, and restore the backup.
 
 % ----------------------------------------------------------------------------------------------%
 \section{Edit an experiment's details}
@@ -47,8 +56,9 @@ Audiograms are acquired through experimental procedures. The details of the expe
 \label{fig:experiment_details}
 \end{figure}
 
-\begin{it}During editing, it is recommended to open the AAD in a second window. The audiogram used in fig. \ref{fig:experiment_details} is audiogram 56, \url{https://animalaudiograms.museumfuernaturkunde.berlin/audiogram?ids=56}.
+\begin{it}During editing, it is recommended to open the AAD in a second window. The AAD is a publicly accessible ressource and can be found here:\\ \url{animalaudiograms.museumfuernaturkunde.berlin/}
 \end{it}
+
 \subsection{Experiment details input form}
 In the \href{https://animalaudiograms.museumfuernaturkunde.berlin/admin/v1/start}{administrative interface}, click on the ``Edit experiment details'' link. This will open a form that lets you edit the details of an \emph{existing} experiment, i.e. one that is \emph{already in the database}.
 

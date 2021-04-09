@@ -23,7 +23,7 @@ class Importer():
         return json_data
 
     def convert(self, filepath):
-        """Convert a csv fule to SQL statements."""
+        """Convert a csv file to SQL statements."""
         # parse the csv file
         model = Parser().process(filepath)
 
