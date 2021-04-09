@@ -16,6 +16,7 @@ import requests
 import json
 import objectpath
 import traceback
+import logging
 
 
 class Tree_of_Life(abc.ABC):
@@ -82,6 +83,7 @@ class Obtain_Lineage(Tree_of_Life):
 
         # use objectpath to search the tree for interesting taxa
         self.tree_obj = objectpath.Tree(response_json)
+
         lineage = dict()
         lineage['unique_name'] = self.tree_obj.execute("$.*['unique_name']")
         lineage['subspecies'] = self._get_taxon_by_rank("subspecies")

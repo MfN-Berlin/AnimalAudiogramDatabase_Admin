@@ -14,9 +14,9 @@ import logging
 import os
 from werkzeug.utils import secure_filename
 from AdminQuery import *
-from Importer import Importer
-from DOI import Obtain_Citation, Obtain_Citation_Short
-from Tree_of_Life import Obtain_OTT_ID, Obtain_Lineage
+#from Importer import Importer
+from data_import.DOI import Obtain_Citation, Obtain_Citation_Short
+from data_import.Tree_of_Life import Obtain_OTT_ID, Obtain_Lineage
 
 
 configPath = "/src/.env"
