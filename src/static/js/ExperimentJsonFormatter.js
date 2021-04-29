@@ -27,7 +27,7 @@ class ExperimentJsonFormatter extends AbstractJsonFormatter {
                'Measurement type', 
                'measurement_type', 
                jsonObj.measurement_type,
-               ['auditory threshold', 'critical ratio', 'critical bandwidth', 'time period of integration', 'TTS - Temporary Threshold Shift', 'PTS - Permanent Threshold Shift', 'signal duration test'] 
+               ['auditory threshold', 'critical ratio', 'critical bandwidth', 'equal loudness contours', 'time period of integration', 'TTS - Temporary Threshold Shift', 'PTS - Permanent Threshold Shift', 'signal duration test'] 
             )}
             ${this.format_input('Number of measurements', 'number_of_measurements', jsonObj.number_of_measurements)}
             ${this.format_pulldown_keyval(
