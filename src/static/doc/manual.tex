@@ -150,6 +150,16 @@ Adding a new audiogram to the database requires a combination of several actions
 \end{itemize}
 
 % ----------------------------------------------------------------------------------------------%
+\section{Make changes to the database scheme}
+To make changes to the database scheme, make a backup as explained above. Open the backup file with a text editor (or load it in phpMyAdmin) and make the necessary changes.
+\\\\
+\emph{All audiogram data added after the backup was made will be erased.}
+\\\\
+This method can be used to change an enum or a data type. The resulting scheme must be compatible with the constraints of the data.
+
+For example, to add a new measurement type, make a backup, find the table ``audiogram\_experiment'' and add the new data set to the definition of the enum ``measurement\_type''. Restore the backup.
+
+% ----------------------------------------------------------------------------------------------%
 \section{Further documentation}
 Audiogram Metadata Scheme
 \url{https://github.com/MfN-Berlin/AnimalAudiogramDatabase/blob/main/resources/metadata/audiogram_metadata_scheme.md}

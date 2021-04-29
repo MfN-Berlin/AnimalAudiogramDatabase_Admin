@@ -22,8 +22,7 @@ class Backup:
             command = "mysqldump -h %s -u %s -p%s %s > %s" % (
                 self.host, self.username, self.password, self.database, self.backup_file)
             os.system(command)
-            return self.outfile
-
+            return self.backup_file
         except Exception as e:
             logging.warning(e)
             return False
