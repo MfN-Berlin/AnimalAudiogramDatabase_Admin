@@ -33,4 +33,15 @@ class PublicationDAO extends AbstractDAO {
         return this.httpGet(url);
     }
     
+    new() {
+       var jsonObj = JSON.parse(`
+[
+  {
+    "citation_long": null,
+    "citation_short": null
+  }
+]`);
+        return jsonObj;
+    }
+
 }

@@ -3,6 +3,9 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/AADFactory.js') }}"></script>
 <script type="text/javascript">
   var controller = new AADFactory().createPublicationController();
+  document.addEventListener('DOMContentLoaded', function() {
+      controller.new();
+  });
 </script>
 <div class="backend_action">
   <h3>Add a publication</h3>
