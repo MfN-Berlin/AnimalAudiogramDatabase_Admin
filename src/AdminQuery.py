@@ -85,7 +85,7 @@ class DataPointsQuery(AdminQuery):
                 where
                    audiogram_experiment_id=%(audiogram_experiment_id)s
                 order by
-                   testtone_frequency_in_khz desc
+                   testtone_frequency_in_khz asc
                 """,  # noqa: E501
                 {'audiogram_experiment_id': param})
             row_headers = [x[0] for x in cursor.description]

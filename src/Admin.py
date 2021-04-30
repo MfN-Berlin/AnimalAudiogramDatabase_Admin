@@ -726,9 +726,11 @@ def save_publication():
     publication = {}
     try:
         # all data is there, save in database
-        if (doi
-                and request.args['citation_long'] != 'undefined'
+        if (
+            (doi or doi == "")
+            and request.args['citation_long'] != 'undefined'
                 and request.args['citation_short'] != 'undefined'):
+
             resp = Add_publication_query(admin_config).run(request.args)
             # returns either id of new publication or false
             return jsonify(resp)
